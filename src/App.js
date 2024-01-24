@@ -58,7 +58,7 @@ function App() {
       <tr className='text-center'>
         <td>{item.index+1}</td>
         <td>{item.name}</td>
-        <td><img src={item.Profile} width={50} height={50} className='rounded-circle'></img></td>
+        <td><img src={item.Profile} width={50} height={50} alt='' className='rounded-circle'></img></td>
         <td>{item.email}</td>
         <td>{item.address}</td>
         <td>{item.contact}</td>
