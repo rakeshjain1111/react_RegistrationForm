@@ -4,7 +4,7 @@ import 'font-awesome/css/font-awesome.min.css'
 import { Button, Container, Form, Modal,Table} from 'react-bootstrap';
 function App() {
 
-  const[show,setShow]=useState(true);
+  const[show,setShow]=useState("");
   const[allData, setAllData]=useState([{}]);
   
  const getFormData = (e) => {
@@ -122,6 +122,7 @@ function App() {
         </Modal>
        </Container>
        <Container>
+        <h1 className='text-center'>Registration Details</h1>
        <Table striped bordered hover>
         <thead>
         <tr className='text-center'>
