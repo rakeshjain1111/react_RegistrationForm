@@ -6,22 +6,31 @@ function App() {
 
   const[show,setShow]=useState("");
   const[allData, setAllData]=useState([{}]);
+  const[input, setInput]=useState({name:"",email:"",address:"",contact:""});
+  const[btnState, setBtnState]=useState(true);
+  const[index,setIndex]=useState(0);
   
+  function getInputData(e){
+    let target=e.target;
+    let value=target.value;
+    let key= target.name;
+    // console.log(key," ",value);
+    return(
+      setInput((old) =>{
+        return{
+          ...old,
+          [key]:value
+        }
+      })
+    )
+  }
+
+  let temp={}
+
  const getFormData = (e) => {
     e.preventDefault();
     let form=e.target;
     let formData= new FormData(form);
-    // console.log(formData);
-    console.log(formData.get("name"));
-    console.log(formData.get("email"));
-    console.log(formData.get("Profile"));
-    console.log(formData.get("address"));
-    console.log(formData.get("contact"));
-  
-  
-     
-    let temp={}
-
     for(let data of formData.entries())
     {
       let key = data[0];
@@ -31,17 +40,10 @@ function App() {
       {
         value=URL.createObjectURL(value)
       }
-
-      temp[key] =value;
-
-     
+      temp[key] =value; 
+      
     }
-    return(
-      setAllData((old) => {
-        return[...old,temp]
-      }),
-      setShow(false)
-    )
+   
   }
 
   function deleteUser(index){
@@ -49,6 +51,59 @@ function App() {
     tempdata.splice(index,1);
     return (
       setAllData(tempdata)
+    )
+  }
+
+  function editData(item){
+
+      //console.log(item);
+      setBtnState(false);
+      setShow(true);
+      setInput(item);
+      setIndex(item.index);
+  }
+
+  function insertData(e){
+    e.preventDefault();
+    getFormData(e);
+    return(
+      setAllData((old) => {
+        return[...old,temp]
+      }),
+      setShow(false),
+      setBtnState(true),
+      setInput({
+        name:"",
+        email:"",
+        address:"",
+        contact:""
+      })
+    )
+
+  }
+
+  function updateData(e){
+      e.preventDefault();
+      getFormData(e);
+      const tempData =[...allData];
+      tempData[index]=temp;
+      return(
+        setShow(false),
+        setAllData(tempData)
+      )
+  }
+
+  function AddButton(){
+    console.log(index);
+    return(
+      setShow(true),
+      setInput({
+        name:"",
+        email:"",
+        address:"",
+        contact:""
+      }),
+      setBtnState(true)
     )
   }
 
@@ -63,7 +118,7 @@ function App() {
         <td>{item.address}</td>
         <td>{item.contact}</td>
         <td>
-          <Button className='me-2'><i className='fa fa-edit'></i></Button>
+          <Button className='me-2' onClick={()=>editData(item)}><i className='fa fa-edit'></i></Button>
           <Button variant='danger' onClick={() =>deleteUser(item.index)}><i className='fa fa-trash'></i></Button>
         </td>
       </tr>
@@ -74,7 +129,7 @@ function App() {
   return (
     <>
        <Container>
-        <Button className='mt-4' onClick={() => setShow(true)}>Add User&nbsp;
+        <Button className='mt-4' onClick={AddButton}>Add User&nbsp;
           <i className='fa fa-plus'></i>
         </Button>
         <Modal show={show}>
@@ -84,33 +139,36 @@ function App() {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form onSubmit={getFormData} >
+            <Form onSubmit={btnState ? insertData:updateData} >
               <Form.Group>
                 <Form.Label>Your Name</Form.Label>
-                <Form.Control type="text" name="name" placeholder="Enter Your Name" />
+                <Form.Control type="text" name="name" placeholder="Enter Your Name" onChange={getInputData} value={input.name}/>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Email</Form.Label>
-                <Form.Control type="email" name="email" placeholder="Enter Your Email" />
+                <Form.Control type="email" name="email" placeholder="Enter Your Email" onChange={getInputData} value={input.email} />
               </Form.Group>
               <Form.Group>
                 <Form.Label>Password</Form.Label>
-                <Form.Control type="password" name="password" placeholder="Make Password" />
+                <Form.Control type="password" name="password" placeholder="Make Password" onChange={getInputData}/>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Address</Form.Label>
-                <Form.Control type="text" name="address" placeholder="Enter Address" />
+                <Form.Control type="text" name="address" placeholder="Enter Address" onChange={getInputData} value={input.address}/>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Your Contact</Form.Label>
-                <Form.Control type="tel" name="contact" placeholder="Enter Contact Number" />
+                <Form.Control type="tel" name="contact" placeholder="Enter Contact Number" onChange={getInputData} value={input.contact}/>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Profile Picture</Form.Label>
                 <Form.Control type="file" name="Profile" placeholder="Enter Profile Photo" />
               </Form.Group>
               <div className='d-flex justify-content-between mt-3'>
-              <Button type="submit" variant="primary">Submit</Button>
+                {
+                  btnState ? <Button type="submit" variant="primary">Submit</Button> :  <Button type="submit" variant="secondary">Update</Button>
+                }
+             
               <Button variant="danger" onClick={() => setShow(false)}>Cancel</Button>
               </div>
             </Form>
